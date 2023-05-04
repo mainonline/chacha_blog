@@ -1,0 +1,524 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Blog API",
+      "description": "API for managing blog posts"
+    },
+    "basePath": "/",
+    "schemes": [
+      "http",
+      "https"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "definitions": {
+      "User": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "johndoe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123"
+          },
+          "posts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Post"
+            }
+          }
+        }
+      },
+      "UserRegistrationInput": {
+        "type": "object",
+        "required": ["name", "email", "password"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "User's name"
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "format": "password"
+          }
+        }
+      },
+      "UserLoginInput": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "format": "password"
+          }
+        }
+      },
+      "Post": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The title of the post",
+            "example": "My first post"
+          },
+          "content": {
+            "type": "string",
+            "description": "The content of the post",
+            "example": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date the post was created",
+            "example": "2023-05-05T14:30:00.000Z"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "description": "An array of images attached to the post",
+            "example": [
+              "image1.jpg",
+              "image2.jpg"
+            ]
+          },
+          "author": {
+            "$ref": "#/definitions/User",
+            "description": "The user who created the post"
+          },
+          "_id": {
+            "type": "string",
+            "description": "The unique identifier of the post",
+            "example": "60a28e06d6b9d83484e5b8e3"
+          }
+        }
+      }
+    },
+    "paths": {
+      "/register": {
+        "post": {
+          "tags": [
+            "Users"
+          ],
+          "description": "Registers a new user",
+      "consumes": [
+        "application/json"
+      ],
+      "produces": [
+        "application/json"
+      ],
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "description": "User's details",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/UserRegistrationInput"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User successfully registered",
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            },
+            "400": {
+              "description": "Invalid request data"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/login": {
+        "post": {
+          "tags": [
+            "Users"
+          ],
+          "description": "Logs in a user",
+      "consumes": [
+        "application/json"
+      ],
+      "produces": [
+        "application/json"
+      ],
+          "parameters": [
+            {
+              "name": "body",
+          "in": "body",
+          "description": "User's login details",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/UserLoginInput"
+          }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User successfully logged in",
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            },
+            "400": {
+              "description": "Invalid request data or user not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/logout": {
+        "post": {
+          "tags": [
+            "Users"
+          ],
+          "description": "Logs out a user by deleting their refresh token",
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Logout successful"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/refresh": {
+        "post": {
+          "tags": [
+            "Users"
+          ],
+          "description": "Generates a new access token using a refresh token",
+          "parameters": [
+            {
+              "name": "refreshToken",
+              "in": "cookie",
+              "description": "Refresh token",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "New access and refresh tokens generated successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accessToken": {
+                    "type": "string"
+                  },
+                  "refreshToken": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid or expired refresh token provided"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/users": {
+        "get": {
+          "tags": [
+            "Users"
+          ],
+          "description": "Get all users",
+          "parameters": [
+            {
+              "name": "page",
+              "in": "query",
+              "description": "Page number of results to return (default: 1)",
+              "required": false,
+              "type": "integer",
+              "default": 1
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "description": "Number of results to return per page (default: 20)",
+              "required": false,
+              "type": "integer",
+              "default": 20
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of users",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/User"
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/users/{userId}": {
+        "get": {
+          "tags": [
+            "Users"
+          ],
+          "description": "Retrieves a single user by ID",
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "path",
+              "description": "ID of the user to retrieve",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User found and returned",
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            },
+            "400": {
+              "description": "Invalid request data"
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/posts": {
+        "post": {
+          "tags": [
+            "Posts"
+          ],
+          "description": "Creates a new post",
+          "parameters": [
+            {
+              "name": "title",
+              "in": "formData",
+              "description": "Title of the post",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "content",
+              "in": "formData",
+              "description": "Content of the post",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "images",
+              "in": "formData",
+              "description": "Array of images to attach to the post",
+              "required": false,
+              "type": "array",
+              "items": {
+                "type": "file"
+              },
+              "collectionFormat": "multi"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Post created successfully",
+              "schema": {
+                "$ref": "#/definitions/Post"
+              }
+            },
+            "400": {
+              "description": "Invalid request data"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/posts/{postId}": {
+        "put": {
+          "tags": [
+            "Posts"
+          ],
+          "summary": "Update an existing post",
+          "parameters": [
+            {
+              "name": "postId",
+              "in": "path",
+              "description": "ID of the post to update",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "title",
+              "in": "formData",
+              "description": "New title for the post",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "content",
+              "in": "formData",
+              "description": "New content for the post",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "images",
+              "in": "formData",
+              "description": "Array of images to attach to the post",
+              "required": false,
+              "type": "array",
+              "items": {
+                "type": "file"
+              },
+              "collectionFormat": "multi"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Post successfully updated",
+              "schema": {
+                "$ref": "#/definitions/Post"
+              }
+            },
+            "400": {
+              "description": "Invalid request data"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "404": {
+              "description": "Post not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          },
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ]
+        },
+        "get": {
+          "tags": [
+            "Posts"
+          ],
+          "description": "Retrieves a single post by ID",
+          "parameters": [
+            {
+              "name": "postId",
+              "in": "path",
+              "description": "ID of the post to retrieve",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Post successfully retrieved",
+              "schema": {
+                "$ref": "#/definitions/Post"
+              }
+            },
+            "400": {
+              "description": "Invalid request data"
+            },
+            "404": {
+              "description": "Post not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "Posts"
+          ],
+          "description": "Deletes a post by ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "ID of the post to delete",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Post successfully deleted"
+            },
+            "400": {
+              "description": "Invalid post ID"
+            },
+            "401": {
+              "description": "Unauthorized access"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      }
+    }
+  }
