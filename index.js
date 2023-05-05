@@ -16,7 +16,7 @@ app.use(cookieParser());
 
 app.use(cors());
 app.use("/", router);
-app.use("/uploads", express.static("uploads"));
+app.use("/tmp", express.static("tmp"));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(errorMiddleware);
 
