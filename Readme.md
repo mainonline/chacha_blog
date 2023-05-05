@@ -8,18 +8,18 @@ This is a Node.js application built with Express and Mongoose.
 
 To install all the dependencies, run:
 
-yarn install
+`yarn install`
 
 To start the app in local development mode, run:
 
-yarn dev
+`yarn dev`
 
 The following environment variables need to be set in a `.env` file:
 
-PORT=''
-DB_URL=''
-JWT_REFRESH_SECRET=''
-JWR_ACCESS_SECRET=''
+PORT,
+DB_URL,
+JWT_REFRESH_SECRET,
+JWR_ACCESS_SECRET
 
 ## Contributing
 
