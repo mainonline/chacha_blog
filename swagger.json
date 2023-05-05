@@ -413,6 +413,55 @@
               "description": "Internal server error"
             }
           }
+        },
+        "get": {
+          "tags": [
+              "Posts"
+          ],
+          "description": "Retrieves all posts",
+          "security": [
+              {
+                  "BearerAuth": []
+              }
+          ],
+          "parameters": [
+              {
+                  "name": "page",
+                  "in": "query",
+                  "description": "Page number",
+                  "required": false,
+                  "type": "integer",
+                  "minimum": 1,
+                  "default": 1
+              },
+              {
+                  "name": "limit",
+                  "in": "query",
+                  "description": "Number of posts per page",
+                  "required": false,
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100,
+                  "default": 20
+              }
+          ],
+          "responses": {
+              "200": {
+                  "description": "List of posts",
+                  "schema": {
+                      "type": "array",
+                      "items": {
+                          "$ref": "#/definitions/Post"
+                      }
+                  }
+              },
+              "401": {
+                  "description": "Unauthorized"
+              },
+              "500": {
+                  "description": "Internal server error"
+              }
+          }
         }
       },
       "/posts/{postId}": {

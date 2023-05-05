@@ -63,9 +63,23 @@ class UserService {
     return { ...tokens, user: userDto };
   }
 
-  async getAllUsers() {
-    const users = await UserModel.find().populate("posts");
-    return users;
+  async getAllUsers(page, limit) {
+    const skip = (page - 1) * limit;
+    const [users, totalCount] = await Promise.all([
+      UserModel.find().skip(skip).limit(limit).populate("posts"),
+      UserModel.countDocuments(),
+    ]);
+    const totalPages = Math.ceil(totalCount / limit);
+    return {
+      users,
+      pagination: {
+        totalCount,
+        totalPages,
+        currentPage: page,
+        hasPrevPage: page > 1,
+        hasNextPage: page < totalPages,
+      },
+    };
   }
 
   async getUserById(id) {
