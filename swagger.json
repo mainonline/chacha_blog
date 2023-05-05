@@ -16,6 +16,14 @@
     "produces": [
       "application/json"
     ],
+    "securityDefinitions": {
+      "BearerAuth": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "description": "Bearer token required to access protected endpoints"
+      }
+    },
     "definitions": {
       "User": {
         "type": "object",
@@ -272,6 +280,11 @@
             "Users"
           ],
           "description": "Get all users",
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
           "parameters": [
             {
               "name": "page",
@@ -312,6 +325,11 @@
             "Users"
           ],
           "description": "Retrieves a single user by ID",
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
           "parameters": [
             {
               "name": "userId",
@@ -346,6 +364,11 @@
             "Posts"
           ],
           "description": "Creates a new post",
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
           "parameters": [
             {
               "name": "title",

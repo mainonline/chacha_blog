@@ -64,8 +64,13 @@ class UserService {
   }
 
   async getAllUsers() {
-    const users = await UserModel.find();
+    const users = await UserModel.find().populate("posts");
     return users;
+  }
+
+  async getUserById(id) {
+    const user = await UserModel.findById(id).populate("posts");
+    return user;
   }
 }
 
