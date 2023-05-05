@@ -3,10 +3,11 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
+const swaggerUi = require("swagger-ui-express");
+const bodyParser = require("body-parser");
+const swaggerDocument = require("./swagger.json");
 const router = require("./router/index");
 const errorMiddleware = require("./middlewares/error-middleware");
-const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require("./swagger.json");
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors());
+app.use(bodyParser.json());
 app.use("/", router);
 app.use("/uploads", express.static("uploads"));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
