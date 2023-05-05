@@ -4,6 +4,11 @@
 
 This is a Node.js application built with Express and Mongoose.
 
+## Test swagger user
+
+"email": "user@example.com",
+"password": "string"
+
 ## Getting Started
 
 To install all the dependencies, run:
