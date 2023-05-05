@@ -18,7 +18,6 @@ app.use(cookieParser());
 
 app.use(cors());
 app.use("/", router);
-// app.use("/tmp", express.static("tmp"));
 app.use(express.static(path.join(os.tmpdir())));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(errorMiddleware);
