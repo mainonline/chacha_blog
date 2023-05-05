@@ -7,8 +7,8 @@
   },
   "basePath": "/",
   "schemes": [
-    "http",
-    "https"
+    "https",
+    "http"
   ],
   "consumes": [
     "application/json"
@@ -243,7 +243,7 @@
       }
     },
     "/refresh": {
-      "post": {
+      "get": {
         "tags": [
           "Users"
         ],
