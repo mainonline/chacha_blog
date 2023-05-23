@@ -10,15 +10,28 @@ const errorMiddleware = require("./middlewares/error-middleware");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 
+//dotenv
+require("dotenv").config();
+
 const PORT = process.env.PORT || 5000;
 const app = express();
+
+app.set("view engine", "hbs");
+app.set("views", path.join(__dirname, "views"));
+
 
 app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors());
 app.use("/", router);
-app.use(express.static(path.join(os.tmpdir())));
+// app.use(express.static(path.join(os.tmpdir())));
+// parse requests of content-type - application/json
+app.use(express.json());
+// parse requests of content-type - application/x-www-form-urlencoded
+app.use(express.urlencoded({
+  extended: true
+}));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(errorMiddleware);
 

@@ -36,6 +36,27 @@ class PostController {
     }
   }
 
+  async patchPost(req, res, next) {
+    try {
+      const data = req.body;
+      const user = req.user;
+      const { id } = req.params;
+      const files = req.files;
+
+      const singlePost = await postService.getOne(id);
+
+      if (singlePost.author.toString() !== user.id) {
+        return next(ApiError.Forbidden("You are not the author of this post"));
+      }
+
+      const updatedPost = await postService.patch(id, data, files);
+      res.json(updatedPost);
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  }
+
   async getAllPosts(req, res, next) {
     try {
       const page = parseInt(req.query.page) || 1;

@@ -4,16 +4,8 @@ const postController = require("../controllers/post-controller");
 const router = new Router();
 const { body } = require("express-validator");
 const authMiddleware = require("../middlewares/auth-middleware");
-const multer = require("multer");
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "tmp/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, new Date().toISOString() + "-" + file.originalname);
-  },
-});
-const upload = multer({ storage: storage });
+const upload = require("../multer");
+
 
 router.post(
   "/register",
@@ -29,15 +21,21 @@ router.get("/users/:id", authMiddleware, userController.getSingleUser);
 
 router.post(
   "/posts",
-  authMiddleware,
   upload.array("images"),
+  authMiddleware,
   postController.createPost
 );
 router.put(
   "/posts/:id",
-  authMiddleware,
   upload.array("images"),
+  authMiddleware,
   postController.updatePost
+);
+router.patch(
+  "/posts/:id",
+  upload.array("images"),
+  authMiddleware,
+  postController.patchPost
 );
 router.get("/posts", authMiddleware, postController.getAllPosts);
 router.get("/posts/:id", authMiddleware, postController.getOnePost);
