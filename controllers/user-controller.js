@@ -80,6 +80,19 @@ class UserController {
       next(e);
     }
   }
+
+  async patchUser(req, res, next) {
+    try {
+      const { id } = req.params;
+      const data = req.body;
+      const file = req.file;
+
+      const user = await userService.update(id, data, file);
+      return res.json(user);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 module.exports = new UserController();
