@@ -24,10 +24,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors({
-  accessControlAllowOrigin: "*",
-  credentials: true,
-  optionSuccessStatus: 200,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  origin: "http://localhost:3000",
 }));
 app.use("/", router);
 app.use(express.json());
