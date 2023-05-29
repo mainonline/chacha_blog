@@ -23,12 +23,14 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(cors());
+app.use(cors({
+  accessControlAllowOrigin: "*",
+  credentials: true,
+  optionSuccessStatus: 200,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+}));
 app.use("/", router);
-// app.use(express.static(path.join(os.tmpdir())));
-// parse requests of content-type - application/json
 app.use(express.json());
-// parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({
   extended: true
 }));
