@@ -38,9 +38,15 @@ class UserController {
   async logout(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
-      const token = await userService.logout(refreshToken);
-      res.clearCookie("refreshToken");
-      return res.json(token);
+      const { deletedTokenCount } = await userService.logout(refreshToken);
+      
+      if (deletedTokenCount > 0) {
+        res.clearCookie("refreshToken");
+        res.clearCookie("accessToken");
+        return res.json({ message: "Successfully logged out" });
+      } else {
+        return res.json({ message: "Token not found" });
+      }
     } catch (e) {
       next(e);
     }
@@ -50,6 +56,7 @@ class UserController {
     try {
       const { refreshToken } = req.cookies;
       const userData = await userService.refresh(refreshToken);
+
       res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
@@ -83,11 +90,10 @@ class UserController {
 
   async patchUser(req, res, next) {
     try {
-      const { id } = req.params;
       const data = req.body;
       const file = req.file;
 
-      const user = await userService.update(id, data, file);
+      const user = await userService.update(data, file);
       return res.json(user);
     } catch (e) {
       next(e);

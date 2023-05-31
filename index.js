@@ -15,17 +15,19 @@ require("dotenv").config();
 
 const PORT = process.env.PORT || 5000;
 const app = express();
+app.use(cookieParser());
 
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
 
-app.use(express.json());
-app.use(cookieParser());
-
 app.use(cors({
   origin: "http://localhost:3000",
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Methods", "Access-Control-Request-Headers", "Access-Control-Allow-Origin", "Origin", "Accept", "X-Requested-With", "Access-Control-Allow-Credentials", "Cookie"],
 }));
+
+app.use(express.json());
 app.use("/", router);
 app.use(express.json());
 app.use(express.urlencoded({

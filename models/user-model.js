@@ -1,5 +1,4 @@
 const { Schema, model, mongoose } = require("mongoose");
-const { settingsConfig } = require("../constants/layoutSettings");
 
 const UserSchema = new Schema(
   {
@@ -8,7 +7,7 @@ const UserSchema = new Schema(
     password: { type: String, required: true },
     image: { type: Object, default: null },
     banned: { type: Boolean, default: false },
-    layout: { type: Object, default:  settingsConfig },
+    settings: { type: Schema.Types.ObjectId, ref: "UserLayout" },
     roles: [{ type: String, ref: "Role" }],
     posts: [
       {

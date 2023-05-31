@@ -57,9 +57,7 @@ class UserService {
 
   async login(email, password) {
     const user = await UserModel.findOne({ email });
-    console.log("email", email);
-    console.log("password", password);
-    console.log("user", user);
+
     if (!user) {
       throw ApiError.BadRequest("User with this email not found");
     }
@@ -71,12 +69,12 @@ class UserService {
     const tokens = tokenService.generateTokens({ ...userDto });
 
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
-    return { ...tokens, user: userDto };
+    return { ...tokens, user };
   }
 
   async logout(refreshToken) {
-    const token = await tokenService.removeToken(refreshToken);
-    return token;
+    const deletedTokenCount = await tokenService.removeToken(refreshToken);
+    return { deletedTokenCount };
   }
 
   async refresh(refreshToken) {
@@ -93,7 +91,7 @@ class UserService {
     const tokens = tokenService.generateTokens({ ...userDto });
 
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
-    return { ...tokens, user: userDto };
+    return { ...tokens, user };
   }
 
   async getAllUsers(page, limit) {
@@ -122,9 +120,11 @@ class UserService {
   }
 
   /* patch method */
-  async update(id, data, file) {
-    console.log("update method", id, data, file);
-    const user = await UserModel.findById(id);
+  async update(data, file) {
+    console.log("data", data);
+    console.log("user id: ", data.id);
+    const user = await UserModel.findById(data.user.id);
+    console.log("user", user);
     if (!user) {
       throw ApiError.NotFound("User not found");
     }
@@ -145,11 +145,11 @@ class UserService {
     }
 
     // Update user data
-    user.name = data.name || user.name;
-    user.email = data.email || user.email;
+    user.name = data.user.name || user.name;
+    user.email = data.user.email || user.email;
     user.image = updatedImage || user.image;
-    user.banned = data.banned || user.banned;
-    user.layout = data.layout || user.layout;
+    user.banned = data.user.banned || user.banned;
+    user.settings = data.user.settings || user.settings;
     await user.save();
     return { error: null, status: 200, message: "User updated successfully" };
   }

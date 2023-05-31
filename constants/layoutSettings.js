@@ -1,4 +1,6 @@
-lightPaletteText = {
+const layoutConfig = require("./layoutConfig");
+
+const lightPaletteText = {
   primary: "rgb(17, 24, 39)",
   secondary: "rgb(107, 114, 128)",
   disabled: "rgb(149, 156, 169)",
@@ -13,9 +15,9 @@ const darkPaletteText = {
 const settingsConfig = {
   layout: {
     style: "layout1",
-    config: {},
+    config: layoutConfig,
   },
-  customScrollbars: true,
+  customScrollbars: false,
   direction: "ltr", // rtl, ltr
   theme: {
     main: {

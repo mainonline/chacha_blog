@@ -14,9 +14,9 @@ router.post(
 );
 
 router.post("/login", userController.login);
-router.post("/logout", userController.logout);
+router.get("/logout", userController.logout);
 router.get("/refresh", userController.refresh);
-router.patch("/update/:id",upload.single('image'), authMiddleware, userController.patchUser);
+router.patch("/update",upload.single('image'), authMiddleware, userController.patchUser);
 router.get("/", authMiddleware, userController.getUsers);
 router.get("/:id", authMiddleware, userController.getSingleUser);
 
