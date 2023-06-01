@@ -1,9 +1,9 @@
 const { Schema, model } = require("mongoose");
-import settingsConfig from "../constants/layoutSettings";
+const { settingsConfig } = require("../constants/layoutSettings");
 
 const UserLayout = new Schema(
   {
-    settigns: {
+    settings: {
       type: Object,
       default: settingsConfig,
     },

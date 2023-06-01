@@ -1,6 +1,7 @@
 const UserModel = require("../models/user-model");
 const RoleModel = require("../models/role-model");
 const UserRoleModel = require("../models/user-role-model");
+const UserLayout = require("../models/user-layout");
 const bcrypt = require("bcrypt");
 const tokenService = require("./token-service");
 const UserDto = require("../dtos/user-dto");
@@ -9,6 +10,8 @@ const cloudinary = require("../cloudinary");
 const fs = require("fs");
 
 class UserService {
+
+  // user registration
   async registration(email, password, name) {
     const candidate = await UserModel.findOne({ email });
     if (candidate) {
@@ -31,6 +34,10 @@ class UserService {
       roles: [role._id],
     });
 
+    const userLayout = await UserLayout.create({
+      user: user._id,
+    });
+
     const userRole = await UserRoleModel.create({
       user: user._id,
       role: role._id,
@@ -46,6 +53,7 @@ class UserService {
 
     // Assign the roles to the user object
     user.roles = roles;
+    user.layoutId = userLayout._id;
     user.save();
 
     const userDto = new UserDto(user);
@@ -55,12 +63,16 @@ class UserService {
     return { ...tokens, user: userDto };
   }
 
+  // user login
   async login(email, password) {
     const user = await UserModel.findOne({ email });
 
     if (!user) {
       throw ApiError.BadRequest("User with this email not found");
     }
+
+    const userLayout = await UserLayout.findOne({ user: user._id });
+
     const isPassEquals = await bcrypt.compare(password, user.password);
     if (!isPassEquals) {
       throw ApiError.BadRequest("Invalid password or email");
@@ -69,14 +81,16 @@ class UserService {
     const tokens = tokenService.generateTokens({ ...userDto });
 
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
-    return { ...tokens, user };
+    return { ...tokens, user, userLayout };
   }
 
+  // user logout
   async logout(refreshToken) {
     const deletedTokenCount = await tokenService.removeToken(refreshToken);
     return { deletedTokenCount };
   }
 
+  // user refresh token
   async refresh(refreshToken) {
     if (!refreshToken) {
       throw ApiError.UnauthorizedError();
@@ -87,13 +101,16 @@ class UserService {
       throw ApiError.UnauthorizedError();
     }
     const user = await UserModel.findById(userData.id);
+    const userLayout = await UserLayout.findOne({ user: userData.id });
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({ ...userDto });
 
+
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
-    return { ...tokens, user };
+    return { ...tokens, user, userLayout };
   }
 
+  // get all users
   async getAllUsers(page, limit) {
     const skip = (page - 1) * limit;
     const [users, totalCount] = await Promise.all([
@@ -121,8 +138,6 @@ class UserService {
 
   /* patch method */
   async update(data, file) {
-    console.log("data", data);
-    console.log("user id: ", data.id);
     const user = await UserModel.findById(data.user.id);
     console.log("user", user);
     if (!user) {
