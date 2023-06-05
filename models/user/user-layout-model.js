@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const { settingsConfig } = require("../constants/layoutSettings");
+const { settingsConfig } = require("../../constants/layoutSettings");
 
 const UserLayout = new Schema(
   {

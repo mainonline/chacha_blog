@@ -9,6 +9,7 @@ const router = require("./router/index");
 const errorMiddleware = require("./middlewares/error-middleware");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
+const createDefaultConstructionCompanies = require("./models/createDefaults");
 
 //dotenv
 require("dotenv").config();
@@ -49,3 +50,8 @@ const start = async () => {
 };
 
 start();
+
+// use only once to create default construction companies
+// start().then(() => {
+//   createDefaultConstructionCompanies();
+// });

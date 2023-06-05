@@ -1,4 +1,4 @@
-const UserLayout = require("../models/user-layout");
+const UserLayout = require("../models/user/user-layout-model");
 
 class LayoutService {
     async getLayout(id) {
